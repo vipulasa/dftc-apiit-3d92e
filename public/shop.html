@@ -28,6 +28,8 @@
       to avoid connecting the SDK to running emulators.
     -->
   <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+
+  <script src="//unpkg.com/alpinejs" defer></script>
 </head>
 
 <body>
@@ -46,7 +48,7 @@
           </li>
           <li class="nav-item">
             <a class="nav-link active" href="shop.html">Shop</a>
-          </li>        
+          </li>
           <li class="nav-item">
             <a class="nav-link" href="contact.html">Contact</a>
           </li>
@@ -55,50 +57,34 @@
     </div>
   </nav>
 
-  <main class="container">
-    <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-light">
-      <div class="col-md-5 p-lg-5 mx-auto my-5">
-        <h1 class="display-4 fw-normal">Punny headline</h1>
-        <p class="lead fw-normal">And an even wittier subheading to boot. Jumpstart your marketing efforts with this
-          example based on Apple’s marketing pages.</p>
-        <a class="btn btn-outline-secondary" href="#">Coming soon</a>
-      </div>
-      <div class="product-device shadow-sm d-none d-md-block"></div>
-      <div class="product-device product-device-2 shadow-sm d-none d-md-block"></div>
-    </div>
-
-    <div class="d-md-flex flex-md-equal w-100 my-md-3 ps-md-3">
-
-      <div class="bg-light me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
-        <div class="my-3 p-3">
-          <h2 class="display-5">Another headline</h2>
-          <p class="lead">And an even wittier subheading.</p>
-        </div>
-        <div class="bg-body shadow-sm mx-auto" style="width: 80%; height: 300px; border-radius: 21px 21px 0 0;"></div>
-      </div>
-      <div class="bg-light me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
-        <div class="my-3 py-3">
-          <h2 class="display-5">Another headline</h2>
-          <p class="lead">And an even wittier subheading.</p>
-        </div>
-        <div class="bg-body shadow-sm mx-auto" style="width: 80%; height: 300px; border-radius: 21px 21px 0 0;"></div>
-      </div>
-
-      <div class="bg-light me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
-        <div class="my-3 p-3">
-          <h2 class="display-5">Another headline</h2>
-          <p class="lead">And an even wittier subheading.</p>
-        </div>
-        <div class="bg-body shadow-sm mx-auto" style="width: 80%; height: 300px; border-radius: 21px 21px 0 0;"></div>
-      </div>
-      <div class="bg-light me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
-        <div class="my-3 py-3">
-          <h2 class="display-5">Another headline</h2>
-          <p class="lead">And an even wittier subheading.</p>
-        </div>
-        <div class="bg-body shadow-sm mx-auto" style="width: 80%; height: 300px; border-radius: 21px 21px 0 0;"></div>
+  <main class="container" x-data="shop">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>Shop</h1>
       </div>
     </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="row">
+          <template x-for="product in products">
+            <div class="col-md-4">
+              <div class="card mb-4">
+                <img class="card-img-top" :src="product.image" alt="Card image cap">
+                <div class="card-body">
+                  <h5 class="card-title"><span x-html="product.name"></span></h5>
+                  <p class="card-text"><span x-html="product.description"></span></p>
+                  <p class="card-text">
+                    <small class="text-muted">Price: <span x-html="product.price"></span></small>
+                  </p>
+                  <button class="btn btn-primary" @click="addToCart(product)">Add to cart</button>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <footer class="container py-5">
@@ -113,13 +99,42 @@
             d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83m13.79-4l-5.74 9.94" />
         </svg>
         <small class="d-block mb-3 text-muted">&copy; 2017–2022</small>
-      </div>  
+      </div>
     </div>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
     crossorigin="anonymous"></script>
+
+  <script>
+    document.addEventListener('alpine:init', () => {
+
+      const firestore = firebase.firestore().collection('products');
+
+      Alpine.data('shop', () => ({
+        products: [],
+        init() {
+          console.log('Shop is loaded!!');
+
+          firestore.get().then(snapshot => {
+            snapshot.forEach(doc => {
+              this.products.push(doc.data());
+            });
+          });
+
+          firestore
+            .onSnapshot(querySnapshot => {
+              this.products = [];
+              querySnapshot.forEach(doc => {
+                this.products.push(doc.data());
+              });
+            });
+
+        }
+      }));
+    })
+  </script>
 </body>
 
 </html>
