@@ -61,7 +61,7 @@
       <div class="col-md-5 p-lg-5 mx-auto my-5">
         <h1 class="display-4 fw-normal">Welcome to Sale X
           <template x-if="user">
-            <span x-html="user.email"></span>
+            <span x-html="user.name"></span>
           </template>
         </h1>
         <p class="lead fw-normal">Sri Lankas one and only Sales guy</p>
@@ -105,8 +105,23 @@
           firebase.auth().onAuthStateChanged(user => {
             if (user) {
               this.user = user;
+
+              // get data from realtime database for the user id
+              firebase.database()
+                .ref('users/' + this.user.uid)
+                .once('value')
+                .then(snapshot => {
+                  this.user = {
+                    ...this.user,
+                    ...snapshot.val()
+                  };
+                });
             }
           });
+
+
+
+
         },
         logout() {
           firebase.auth().signOut();
