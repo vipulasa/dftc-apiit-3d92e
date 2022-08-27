@@ -60,18 +60,28 @@
 
   <main class="container" x-data="contactModule">
     <h1 class="my-4">Contact Sale X</h1>
+
+
     <div class="row mt-5">
-      <div class="col-8">        
+      <div class="col-8">
+        <div class="alert alert-success" x-show="success">
+          <strong>Success!</strong> Your message has been sent.
+        </div>
+        <div class="alert alert-danger" x-show="error">
+          <strong>Error!</strong> Your message has not been sent.
+        </div>
         <form x-on:submit.prevent="saveContactForm">
 
           <div class="mb-3">
             <label for="name" class="form-label">Name</label>
-            <input type="text" x-model="name" class="form-control" name="name" id="name" aria-describedby="nameHelp" required/>
+            <input type="text" x-model="name" class="form-control" name="name" id="name" aria-describedby="nameHelp"
+              required />
           </div>
 
           <div class="mb-3">
             <label for="email" class="form-label">Email address</label>
-            <input type="email" x-model="email" class="form-control" name="email" id="email" aria-describedby="emailHelp" required/>
+            <input type="email" x-model="email" class="form-control" name="email" id="email"
+              aria-describedby="emailHelp" required />
             <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
           </div>
 
@@ -84,12 +94,33 @@
 
         </form>
       </div>
-      <div class="col-4">
-        <h4 x-show="name.length > 3">Hello <span x-html="name"></span></h4>
-        <h5>Email : <span x-html="email"></span></h5>
-        <p x-html="message"></p>
+    </div>
+
+    <div class="row mt-5">
+      <div class="col-12">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Message</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template x-for="contact in contacts">
+              <tr>
+                <td x-html="contact.name"></td>
+                <td x-html="contact.email"></td>
+                <td x-html="contact.message"></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
       </div>
     </div>
+
+
+
   </main>
 
   <footer class="container py-5">
@@ -114,18 +145,64 @@
 
   <script type="text/javascript">
     document.addEventListener('alpine:init', () => {
+
+      const firestore = firebase.firestore().collection('contactRequests');
+
       Alpine.data('contactModule', () => ({
+        contacts: [],
+        success: false,
+        error: false,
         name: '',
         email: '',
         message: '',
-        init(){
-          console.log('contactModule loaded!!');      
+        init() {
+
+          // get all contacts from firestore
+          // firestore.get().then(querySnapshot => {
+          //   querySnapshot.forEach(doc => {
+          //     this.contacts.push(doc.data());
+          //   });
+          // });
+
+          // get all contacts from firestore sorted according to the timestamp
+          firestore
+            .orderBy('timestamp', 'desc')
+            .get()
+            .then(querySnapshot => {
+              querySnapshot.forEach(doc => {
+                this.contacts.push(doc.data());
+              });
+            });
+
+          // get contact form data from firebase realtime database on update
+          firestore
+            .onSnapshot(querySnapshot => {
+              this.contacts = [];
+              querySnapshot.forEach(doc => {
+                this.contacts.push(doc.data());
+              });
+            });
+
         },
-        saveContactForm(){
-          console.log('saveContactForm');
-          console.log(this.name);
-          console.log(this.email);
-          console.log(this.message);
+        saveContactForm() {
+          firestore
+            .add({
+              name: this.name,
+              email: this.email,
+              message: this.message,
+              // add current timestamp to record
+              timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(() => {
+              this.success = true;
+              this.name = '';
+              this.email = '';
+              this.message = '';
+            })
+            .catch((error) => {
+              console.log(error);
+              this.error = true;
+            });
         }
       }))
     })

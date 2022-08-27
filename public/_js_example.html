@@ -31,27 +31,28 @@
 
   <!-- AlpineJs -->
   <script src="//unpkg.com/alpinejs" defer></script>
+
 </head>
 
 <body>
 
-      AlpineJS
-        <div x-data="{count : 1}">
-          <h2 x-html="count"></h2>
-          <button x-on:click="count++">Add</button>
-          <button x-on:click="count>1?count--:1">Remove</button>
-        </div>
+  AlpineJS
+  <div x-data="{count : 1}">
+    <h2 x-html="count"></h2>
+    <button x-on:click="count++">Add</button>
+    <button x-on:click="count>1?count--:1">Remove</button>
+  </div>
 
 
-        <hr>
-        Classic JS
+  <hr>
+  Classic JS
 
-        <h2 id="value">1</h2>
-        <button id="add-button">Add</button>
-        <button id="remove-button"
-          onclick="document.getElementById('value').innerHTML = parseInt(document.getElementById('value').innerHTML) - 1">
-          Remove
-        </button>
+  <h2 id="value">1</h2>
+  <button id="add-button">Add</button>
+  <button id="remove-button"
+    onclick="document.getElementById('value').innerHTML = parseInt(document.getElementById('value').innerHTML) - 1">
+    Remove
+  </button>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
@@ -75,6 +76,7 @@
         document.getElementById('value').innerHTML = 1;
       }
     });
+
 
     console.log('Hello !!');
 
