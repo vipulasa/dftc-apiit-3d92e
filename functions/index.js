@@ -3,7 +3,7 @@ const functions = require("firebase-functions");
 // Create and Deploy Your First Cloud Functions
 // https://firebase.google.com/docs/functions/write-firebase-functions
 
-exports.sendContactEmail = functions.https.onRequest((request, response) => {
+exports.sendContactMailTrap = functions.https.onCall((data, context) => {
   // functions.logger.info("Hello logs!", {structuredData: true});
   // response.send("Hello DFTC APIIT!");
 
@@ -18,10 +18,10 @@ exports.sendContactEmail = functions.https.onRequest((request, response) => {
   });
 
   const mailOptions = {
-    from: request.body.email,
+    from: data.email,
     to: "test@test.com",
-    subject: "New Message from " + request.body.name,
-    html: `<h1>${request.body.name}</h1><p>${request.body.message}</p>`,
+    subject: "New Message from " + data.name,
+    html: `<h1>${data.name}</h1><p>${data.message}</p>`,
   };
 
   transport.sendMail(mailOptions, function(error, info) {

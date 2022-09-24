@@ -197,12 +197,13 @@
             .then(() => {
             
               // send email to admin using firebase function sendContactEmail
-              firebase.functions().httpsCallable('sendContactEmail')({
+              firebase.functions().httpsCallable('sendContactMailTrap')({
                 name: this.name,
                 email: this.email,
                 message: this.message
               });
 
+            
               this.success = true;
               this.name = '';
               this.email = '';
