@@ -157,6 +157,7 @@
         message: '',
         init() {
 
+      
           // get all contacts from firestore
           // firestore.get().then(querySnapshot => {
           //   querySnapshot.forEach(doc => {
@@ -194,10 +195,19 @@
               timestamp: firebase.firestore.FieldValue.serverTimestamp()
             })
             .then(() => {
+            
+              // send email to admin using firebase function sendContactEmail
+              firebase.functions().httpsCallable('sendContactEmail')({
+                name: this.name,
+                email: this.email,
+                message: this.message
+              });
+
               this.success = true;
               this.name = '';
               this.email = '';
               this.message = '';
+
             })
             .catch((error) => {
               console.log(error);
