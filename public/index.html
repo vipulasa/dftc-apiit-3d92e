@@ -102,26 +102,24 @@
         user: null,
         init() {
           // check if the local stogare has a user and get the users information      
-          firebase.auth().onAuthStateChanged(user => {
-            if (user) {
-              this.user = user;
+          firebase
+            .auth()
+            .onAuthStateChanged(user => {
+              if (user) {
+                this.user = user;
 
-              // get data from realtime database for the user id
-              firebase.database()
-                .ref('users/' + this.user.uid)
-                .once('value')
-                .then(snapshot => {
-                  this.user = {
-                    ...this.user,
-                    ...snapshot.val()
-                  };
-                });
-            }
-          });
-
-
-
-
+                // get data from realtime database for the user id
+                firebase.database()
+                  .ref('users/' + this.user.uid)
+                  .once('value')
+                  .then(snapshot => {
+                    this.user = {
+                      ...this.user,
+                      ...snapshot.val()
+                    };
+                  });
+              }
+            });
         },
         logout() {
           firebase.auth().signOut();
